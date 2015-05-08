@@ -10,8 +10,8 @@ import sbtunidoc.Plugin.{ScalaUnidoc, unidocSettings}
 
 object Finagle extends Build {
   val branch = Process("git" :: "rev-parse" :: "--abbrev-ref" :: "HEAD" :: Nil).!!.trim
-  val suffix = if (branch == "master") "" else "-SNAPSHOT"
-
+  //val suffix = if (branch == "master") "" else "-SNAPSHOT"
+  val suffix = ""
   val libVersion = "6.25.0" + suffix
   val utilVersion = "6.24.0" + suffix
   val ostrichVersion = "9.8.0" + suffix

@@ -1,6 +1,6 @@
 package com.twitter.finagle.redis.protocol
 
-import org.jboss.netty.buffer.{ChannelBuffer, ChannelBuffers}
+import org.jboss.netty.buffer.{ ChannelBuffer, ChannelBuffers }
 import com.twitter.finagle.redis.ClientError
 import com.twitter.finagle.redis.util._
 import Commands.trimList
@@ -34,17 +34,16 @@ object LIndex {
 }
 
 case class LInsert(
-    key: ChannelBuffer,
-    relativePosition: String,
-    pivot: ChannelBuffer,
-    value: ChannelBuffer)
+  key: ChannelBuffer,
+  relativePosition: String,
+  pivot: ChannelBuffer,
+  value: ChannelBuffer)
   extends StrictKeyCommand
-  with StrictValueCommand
-{
+  with StrictValueCommand {
   val command = Commands.LINSERT
   override def toChannelBuffer =
     RedisCodec.toUnifiedFormat(Seq(CommandBytes.LINSERT, key, StringToChannelBuffer(relativePosition),
-        pivot, value))
+      pivot, value))
 }
 
 object LInsert {
@@ -85,8 +84,7 @@ object LPush {
 
 case class LRem(key: ChannelBuffer, count: Long, value: ChannelBuffer)
   extends StrictKeyCommand
-  with StrictValueCommand
-{
+  with StrictValueCommand {
   val command = Commands.LREM
   override def toChannelBuffer = {
     val commandArgs = Seq(CommandBytes.LREM, key, StringToChannelBuffer(count.toString), value)
@@ -106,8 +104,7 @@ object LRem {
 
 case class LSet(key: ChannelBuffer, index: Long, value: ChannelBuffer)
   extends StrictKeyCommand
-  with StrictValueCommand
-{
+  with StrictValueCommand {
   val command = Commands.LSET
   override def toChannelBuffer = {
     val commandArgs = List(CommandBytes.LSET, key, StringToChannelBuffer(index.toString), value)
@@ -179,8 +176,22 @@ object LTrim {
   }
 }
 
+case class RPopLPush(key: ChannelBuffer, destinationKey: ChannelBuffer) extends StrictKeyCommand {
+  val command = Commands.RPOPLPUSH
+  override def toChannelBuffer =
+    RedisCodec.toUnifiedFormat(Seq(CommandBytes.RPOPLPUSH, key, destinationKey))
+}
+
+object RPopLPush extends {
+  def apply(args: Seq[Array[Byte]]): RPopLPush = {
+    val list = trimList(args, 2, Commands.RPOPLPUSH)
+    RPopLPush(ChannelBuffers.wrappedBuffer(list(0)), ChannelBuffers.wrappedBuffer(list(1)))
+  }
+}
+
 trait ListRangeCommand extends StrictKeyCommand {
   val start: Long
+
   val end: Long
   val command: String
 

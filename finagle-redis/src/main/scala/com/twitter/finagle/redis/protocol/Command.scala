@@ -118,6 +118,7 @@ object Commands {
   val RPOP              = "RPOP"
   val RPUSH             = "RPUSH"
   val LTRIM             = "LTRIM"
+  val RPOPLPUSH         = "RPOPLPUSH"
 
   // Sets
   val SADD              = "SADD"
@@ -244,6 +245,7 @@ object Commands {
     RPUSH             -> {RPush(_)},
     RPOP              -> {RPop(_)},
     LTRIM             -> {LTrim(_)},
+    RPOPLPUSH         -> {RPopLPush(_)},
 
     // Sets
     SADD              -> {SAdd(_)},
@@ -388,6 +390,7 @@ object CommandBytes {
   val RPOP              = StringToChannelBuffer("RPOP")
   val RPUSH             = StringToChannelBuffer("RPUSH")
   val LTRIM             = StringToChannelBuffer("LTRIM")
+  val RPOPLPUSH         = StringToChannelBuffer("RPOPLPUSH")
 
   // Sets
   val SADD              = StringToChannelBuffer("SADD")

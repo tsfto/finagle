@@ -3,7 +3,7 @@ package com.twitter.finagle.redis
 import com.twitter.finagle.redis.protocol._
 import com.twitter.util.Future
 import org.jboss.netty.buffer.ChannelBuffer
-import _root_.java.lang.{Long => JLong}
+import _root_.java.lang.{ Long => JLong }
 import com.twitter.finagle.redis.util.ReplyFormat
 
 trait Lists { self: BaseClient =>
@@ -46,8 +46,7 @@ trait Lists { self: BaseClient =>
   def lInsertAfter(
     key: ChannelBuffer,
     pivot: ChannelBuffer,
-    value: ChannelBuffer
-  ): Future[Option[JLong]] =
+    value: ChannelBuffer): Future[Option[JLong]] =
     doRequest(LInsert(key, "AFTER", pivot, value)) {
       case IntegerReply(n) => Future.value(if (n == -1) None else Some(n))
     }
@@ -65,8 +64,7 @@ trait Lists { self: BaseClient =>
   def lInsertBefore(
     key: ChannelBuffer,
     pivot: ChannelBuffer,
-    value: ChannelBuffer
-  ): Future[Option[JLong]] =
+    value: ChannelBuffer): Future[Option[JLong]] =
     doRequest(LInsert(key, "BEFORE", pivot, value)) {
       case IntegerReply(n) => Future.value(if (n == -1) None else Some(n))
     }
@@ -80,7 +78,7 @@ trait Lists { self: BaseClient =>
   def lPop(key: ChannelBuffer): Future[Option[ChannelBuffer]] =
     doRequest(LPop(key)) {
       case BulkReply(message) => Future.value(Some(message))
-      case EmptyBulkReply() => Future.value(None)
+      case EmptyBulkReply()   => Future.value(None)
     }
 
   /**
@@ -132,7 +130,7 @@ trait Lists { self: BaseClient =>
   def lRange(key: ChannelBuffer, start: JLong, end: JLong): Future[List[ChannelBuffer]] =
     doRequest(LRange(key, start, end)) {
       case MBulkReply(message) => Future.value(ReplyFormat.toChannelBuffers(message))
-      case EmptyMBulkReply() => Future.value(List())
+      case EmptyMBulkReply()   => Future.value(List())
     }
 
   /**
@@ -144,7 +142,7 @@ trait Lists { self: BaseClient =>
   def rPop(key: ChannelBuffer): Future[Option[ChannelBuffer]] =
     doRequest(RPop(key)) {
       case BulkReply(message) => Future.value(Some(message))
-      case EmptyBulkReply() => Future.value(None)
+      case EmptyBulkReply()   => Future.value(None)
     }
 
   /**
@@ -169,4 +167,18 @@ trait Lists { self: BaseClient =>
     doRequest(LTrim(key, start, end)) {
       case StatusReply(message) => Future.Unit
     }
+
+  /**
+   * Removes the last element in a list, prepends it to another list, and returns it.
+   * If the key is a non-list element, an exception will be thrown.
+   * @param sourceKey
+   * @param destinationKey
+   * @return an option of the value of the element being popped and pushed,, or nothing if the source list is empty.
+   */
+  def rPopLPush(sourceKey: ChannelBuffer, destinationKey: ChannelBuffer): Future[Option[ChannelBuffer]] =
+    doRequest(RPopLPush(sourceKey, destinationKey)) {
+      case BulkReply(message) => Future.value(Some(message))
+      case EmptyBulkReply()   => Future.value(None)
+    }
+
 }
